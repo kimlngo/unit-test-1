@@ -1,6 +1,5 @@
-package com.kimlngo.test;
+package com.kimlngo.component;
 
-import com.kimlngo.component.MvcTestingExampleApplication;
 import com.kimlngo.component.models.CollegeStudent;
 import com.kimlngo.component.models.StudentGrades;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +15,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes= MvcTestingExampleApplication.class)
+@SpringBootTest
 public class ApplicationExampleTest {
 
     private static int count = 0;
@@ -58,7 +57,8 @@ public class ApplicationExampleTest {
     @Test
     public void addGradeResultsForStudentGradesAssertNotEquals() {
         assertNotEquals(0, studentGrades.addGradeResultsForSingleClass(
-                student.getStudentGrades().getMathGradeResults()
+                student.getStudentGrades()
+                       .getMathGradeResults()
         ));
     }
 
@@ -79,7 +79,8 @@ public class ApplicationExampleTest {
     @DisplayName("Check Null for student grades")
     @Test
     public void checkNullForStudentGrades() {
-        assertNotNull(studentGrades.checkNull(student.getStudentGrades().getMathGradeResults()),
+        assertNotNull(studentGrades.checkNull(student.getStudentGrades()
+                                                     .getMathGradeResults()),
                 "object should not be null");
     }
 
@@ -108,10 +109,12 @@ public class ApplicationExampleTest {
     @Test
     public void findGradePointAverage() {
         assertAll("Testing all assertEquals",
-                ()-> assertEquals(353.25, studentGrades.addGradeResultsForSingleClass(
-                        student.getStudentGrades().getMathGradeResults())),
-                ()-> assertEquals(88.31, studentGrades.findGradePointAverage(
-                        student.getStudentGrades().getMathGradeResults()))
+                () -> assertEquals(353.25, studentGrades.addGradeResultsForSingleClass(
+                        student.getStudentGrades()
+                               .getMathGradeResults())),
+                () -> assertEquals(88.31, studentGrades.findGradePointAverage(
+                        student.getStudentGrades()
+                               .getMathGradeResults()))
         );
     }
 }
