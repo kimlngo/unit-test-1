@@ -1,6 +1,9 @@
 package com.kimlngo.springmvc;
 
-import com.kimlngo.springmvc.models.CollegeStudent;
+import com.kimlngo.springmvc.models.*;
+import com.kimlngo.springmvc.repository.HistoryGradeDAO;
+import com.kimlngo.springmvc.repository.MathGradeDAO;
+import com.kimlngo.springmvc.repository.ScienceGradeDAO;
 import com.kimlngo.springmvc.repository.StudentDAO;
 import com.kimlngo.springmvc.service.StudentAndGradeService;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +15,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +29,15 @@ public class StudentAndGradeServiceTest {
 
     @Autowired
     private StudentDAO studentDao;
+
+    @Autowired
+    private MathGradeDAO mathGradeDao;
+
+    @Autowired
+    private HistoryGradeDAO historyGradeDao;
+
+    @Autowired
+    private ScienceGradeDAO scienceGradeDao;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -73,5 +84,24 @@ public class StudentAndGradeServiceTest {
     public void testGetGradeBookService() {
         List<CollegeStudent> studentList = studentService.getGradebook();
         assertEquals(5, studentList.size());
+    }
+
+    @Test
+    public void testCreateGradeService() {
+
+        // create math grade for student
+        assertTrue(studentService.createGrade(80.5, 1, GradeType.MATH));
+        assertTrue(studentService.createGrade(90.5, 1, GradeType.SCIENCE));
+        assertTrue(studentService.createGrade(75.2, 1, GradeType.HISTORY));
+
+        // get all the grade from dao
+        List<MathGrade> mathGrades = mathGradeDao.findGradeByStudentId(1);
+        List<ScienceGrade> scienceGrades = scienceGradeDao.findGradeByStudentId(1);
+        List<HistoryGrade> historyGrades = historyGradeDao.findGradeByStudentId(1);
+
+        // verify that there is a grade
+        assertFalse(mathGrades.isEmpty());
+        assertFalse(scienceGrades.isEmpty());
+        assertFalse(historyGrades.isEmpty());
     }
 }

@@ -28,21 +28,21 @@ public class MvcTestingExampleApplication {
 
 	@Bean
 	@Scope(value = "prototype")
-	@Qualifier("mathGrades")
+	@Qualifier("mathGrade")
 	MathGrade getGrade() {
 		return new MathGrade();
 	}
 
 	@Bean
 	@Scope(value = "prototype")
-	@Qualifier("scienceGrades")
+	@Qualifier("scienceGrade")
 	ScienceGrade getScienceGrade() {
 		return new ScienceGrade();
 	}
 
 	@Bean
 	@Scope(value = "prototype")
-	@Qualifier("historyGrades")
+	@Qualifier("historyGrade")
 	HistoryGrade getHistoryGrade() {
 		return new HistoryGrade();
 	}
