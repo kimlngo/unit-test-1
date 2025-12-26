@@ -54,8 +54,8 @@ public class StudentAndGradeServiceTest {
 
     @Test
     public void testIsStudentNullCheck() {
-        assertTrue(studentService.checkIfStudentIsNull(1));
-        assertFalse(studentService.checkIfStudentIsNull(0));
+        assertTrue(studentService.isStudentExist(1));
+        assertFalse(studentService.isStudentExist(0));
     }
 
     @Test
@@ -71,12 +71,7 @@ public class StudentAndGradeServiceTest {
     @Test
     @Sql("/insertData.sql") //BeforeEach will execute first
     public void testGetGradeBookService() {
-        Iterable<CollegeStudent> collegeStudentIterable = studentService.getGradebook();
-
-        List<CollegeStudent> studentList = new ArrayList<>();
-        collegeStudentIterable.iterator()
-                              .forEachRemaining(studentList::add);
-
+        List<CollegeStudent> studentList = studentService.getGradebook();
         assertEquals(5, studentList.size());
     }
 }

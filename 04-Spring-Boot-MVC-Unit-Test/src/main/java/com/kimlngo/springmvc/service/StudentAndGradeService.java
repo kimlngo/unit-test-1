@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @Transactional
 public class StudentAndGradeService {
@@ -19,18 +22,21 @@ public class StudentAndGradeService {
         studentDao.save(student);
     }
 
-    public boolean checkIfStudentIsNull(int id) {
+    public boolean isStudentExist(int id) {
         return studentDao.findById(id)
                          .isPresent();
     }
 
     public void deleteStudent(int id) {
-        if (checkIfStudentIsNull(id)) {
+        if (isStudentExist(id)) {
             studentDao.deleteById(id);
         }
     }
 
-    public Iterable<CollegeStudent> getGradebook() {
-        return studentDao.findAll();
+    public List<CollegeStudent> getGradebook() {
+        List<CollegeStudent> studentList = new ArrayList<>();
+        studentDao.findAll()
+                  .forEach(studentList::add);
+        return studentList;
     }
 }

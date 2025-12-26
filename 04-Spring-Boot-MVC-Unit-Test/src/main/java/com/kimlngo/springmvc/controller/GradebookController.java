@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 public class GradebookController {
 
@@ -18,7 +20,7 @@ public class GradebookController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String getStudents(Model m) {
-        Iterable<CollegeStudent> gradebook = studentService.getGradebook();
+        List<CollegeStudent> gradebook = studentService.getGradebook();
         m.addAttribute("students", gradebook);
         return "index";
     }
@@ -28,7 +30,7 @@ public class GradebookController {
         studentService.createStudent(student.getFirstname(),
                 student.getLastname(),
                 student.getEmailAddress());
-        Iterable<CollegeStudent> studentList = studentService.getGradebook();
+        List<CollegeStudent> studentList = studentService.getGradebook();
         m.addAttribute("students", studentList);
         return "index";
     }
@@ -36,12 +38,12 @@ public class GradebookController {
     @GetMapping("/delete/student/{id}")
     public String deleteStudent(@PathVariable int id, Model m) {
         //check if student exists before deletion
-        if (!studentService.checkIfStudentIsNull(id)) {
+        if (!studentService.isStudentExist(id)) {
             return "error";
         }
 
         studentService.deleteStudent(id);
-        Iterable<CollegeStudent> students = studentService.getGradebook();
+        List<CollegeStudent> students = studentService.getGradebook();
         m.addAttribute("students", students);
         return "index";
     }
