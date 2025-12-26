@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -56,6 +57,9 @@ public class StudentAndGradeService {
     public void deleteStudent(int id) {
         if (isStudentExist(id)) {
             studentDao.deleteById(id);
+            mathGradeDao.deleteGradeByStudentId(id);
+            scienceGradeDao.deleteGradeByStudentId(id);
+            historyGradeDao.deleteGradeByStudentId(id);
         }
     }
 
@@ -100,5 +104,40 @@ public class StudentAndGradeService {
             }
         }
         return false;
+    }
+
+    public int deleteGrade(int studentId, GradeType gradeType) {
+        if (!isStudentExist(studentId))
+            return 0;
+
+        int sId = 0;
+
+        switch (gradeType) {
+            case MATH -> {
+                Optional<MathGrade> mathOpt = mathGradeDao.findById(studentId);
+                if(mathOpt.isEmpty())
+                    return sId;
+
+                sId = mathOpt.get().getId();
+                mathGradeDao.deleteById(studentId);
+            }
+            case SCIENCE -> {
+                Optional<ScienceGrade> scienceOpt = scienceGradeDao.findById(studentId);
+                if(scienceOpt.isEmpty())
+                    return sId;
+
+                sId = scienceOpt.get().getId();
+                scienceGradeDao.deleteById(studentId);
+            }
+            case HISTORY -> {
+                Optional<HistoryGrade> historyOpt = historyGradeDao.findById(studentId);
+                if(historyOpt.isEmpty())
+                    return sId;
+
+                sId = historyOpt.get().getId();
+                historyGradeDao.deleteById(studentId);
+            }
+        }
+        return sId;
     }
 }

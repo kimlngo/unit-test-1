@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface HistoryGradeDAO extends CrudRepository<HistoryGrade, Integer> {
     List<HistoryGrade> findGradeByStudentId(int id);
+
+    void deleteGradeByStudentId(int id);
 }

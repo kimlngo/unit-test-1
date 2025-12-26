@@ -46,11 +46,19 @@ public class StudentAndGradeServiceTest {
     public void setupDatabase() {
         jdbcTemplate.execute("insert into student(firstname, lastname, email_address) " +
                 "values ('test1', 'test1', 'test1@gmail.com')");
+
+        jdbcTemplate.execute("insert into math_grade(student_id, grade) values (1, 100)");
+        jdbcTemplate.execute("insert into science_grade(student_id, grade) values (1, 90)");
+        jdbcTemplate.execute("insert into history_grade(student_id, grade) values (1, 80)");
     }
 
     @AfterEach
     public void setupAfterTransaction() {
         jdbcTemplate.execute("delete from student");
+        jdbcTemplate.execute("delete from math_grade");
+        jdbcTemplate.execute("delete from science_grade");
+        jdbcTemplate.execute("delete from history_grade");
+
         jdbcTemplate.execute("alter table student alter column id restart with 1");
     }
 
@@ -72,11 +80,26 @@ public class StudentAndGradeServiceTest {
     @Test
     public void deleteStudentService() {
         Optional<CollegeStudent> studentOne = studentDao.findById(1);
+        Optional<MathGrade> mathGradeOptional = mathGradeDao.findById(1);
+        Optional<ScienceGrade> scienceGradeOptional = scienceGradeDao.findById(1);
+        Optional<HistoryGrade> historyGradeOptional = historyGradeDao.findById(1);
+
         assertTrue(studentOne.isPresent());
+        assertTrue(mathGradeOptional.isPresent());
+        assertTrue(scienceGradeOptional.isPresent());
+        assertTrue(historyGradeOptional.isPresent());
+
         studentService.deleteStudent(1);
 
         Optional<CollegeStudent> studentRecheckOpt = studentDao.findById(1);
+        mathGradeOptional = mathGradeDao.findById(1);
+        scienceGradeOptional = scienceGradeDao.findById(1);
+        historyGradeOptional = historyGradeDao.findById(1);
+
         assertFalse(studentRecheckOpt.isPresent());
+        assertFalse(mathGradeOptional.isPresent());
+        assertFalse(scienceGradeOptional.isPresent());
+        assertFalse(historyGradeOptional.isPresent());
     }
 
     @Test
@@ -99,9 +122,37 @@ public class StudentAndGradeServiceTest {
         List<ScienceGrade> scienceGrades = scienceGradeDao.findGradeByStudentId(1);
         List<HistoryGrade> historyGrades = historyGradeDao.findGradeByStudentId(1);
 
-        // verify that there is a grade
-        assertFalse(mathGrades.isEmpty());
-        assertFalse(scienceGrades.isEmpty());
-        assertFalse(historyGrades.isEmpty());
+        // verify that each subject has two grades
+        assertEquals(2, mathGrades.size());
+        assertEquals(2, scienceGrades.size());
+        assertEquals(2, historyGrades.size());
+    }
+
+    @Test
+    public void testCreateGradeWithInvalidData() {
+        //out-of-range grade
+        assertFalse(studentService.createGrade(-1, 1, GradeType.MATH));
+        assertFalse(studentService.createGrade(105, 1, GradeType.MATH));
+
+        //non-existing student
+        assertFalse(studentService.createGrade(90, 10, GradeType.MATH));
+    }
+
+    @Test
+    public void testDeleteGrade() {
+        int studentId = studentService.deleteGrade(1, GradeType.MATH);
+        assertEquals(1, studentId);
+
+        studentId = studentService.deleteGrade(1, GradeType.SCIENCE);
+        assertEquals(1, studentId);
+
+        studentId = studentService.deleteGrade(1, GradeType.HISTORY);
+        assertEquals(1, studentId);
+    }
+
+    @Test
+    public void testDeleteGradeWithInvalidId() {
+        int studentId = studentService.deleteGrade(0, GradeType.MATH);
+        assertEquals(0, studentId);
     }
 }

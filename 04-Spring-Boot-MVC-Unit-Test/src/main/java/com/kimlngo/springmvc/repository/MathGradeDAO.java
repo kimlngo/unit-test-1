@@ -8,4 +8,6 @@ import java.util.List;
 public interface MathGradeDAO extends CrudRepository<MathGrade, Integer> {
 
     List<MathGrade> findGradeByStudentId(int id);
+
+    void deleteGradeByStudentId(int id);
 }
