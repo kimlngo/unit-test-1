@@ -43,6 +43,9 @@ public class StudentAndGradeService {
     @Qualifier("historyGrade")
     private HistoryGrade historyGrade;
 
+    @Autowired
+    private StudentGrades studentGrades;
+
     public void createStudent(String firstName, String lastName, String emailAddress) {
         CollegeStudent student = new CollegeStudent(firstName, lastName, emailAddress);
         student.setId(0);
@@ -106,38 +109,58 @@ public class StudentAndGradeService {
         return false;
     }
 
-    public int deleteGrade(int studentId, GradeType gradeType) {
-        if (!isStudentExist(studentId))
-            return 0;
-
+    public int deleteGrade(int id, GradeType gradeType) {
         int sId = 0;
 
         switch (gradeType) {
             case MATH -> {
-                Optional<MathGrade> mathOpt = mathGradeDao.findById(studentId);
-                if(mathOpt.isEmpty())
+                Optional<MathGrade> mathOpt = mathGradeDao.findById(id);
+                if (mathOpt.isEmpty())
                     return sId;
 
-                sId = mathOpt.get().getId();
-                mathGradeDao.deleteById(studentId);
+                sId = mathOpt.get()
+                             .getStudentId();
+                mathGradeDao.deleteById(id);
             }
             case SCIENCE -> {
-                Optional<ScienceGrade> scienceOpt = scienceGradeDao.findById(studentId);
-                if(scienceOpt.isEmpty())
+                Optional<ScienceGrade> scienceOpt = scienceGradeDao.findById(id);
+                if (scienceOpt.isEmpty())
                     return sId;
 
-                sId = scienceOpt.get().getId();
-                scienceGradeDao.deleteById(studentId);
+                sId = scienceOpt.get()
+                                .getStudentId();
+                scienceGradeDao.deleteById(id);
             }
             case HISTORY -> {
-                Optional<HistoryGrade> historyOpt = historyGradeDao.findById(studentId);
-                if(historyOpt.isEmpty())
+                Optional<HistoryGrade> historyOpt = historyGradeDao.findById(id);
+                if (historyOpt.isEmpty())
                     return sId;
 
-                sId = historyOpt.get().getId();
-                historyGradeDao.deleteById(studentId);
+                sId = historyOpt.get()
+                                .getStudentId();
+                historyGradeDao.deleteById(id);
             }
         }
         return sId;
+    }
+
+    public GradebookCollegeStudent getStudentInformation(int id) {
+        Optional<CollegeStudent> studentOpt = studentDao.findById(id);
+
+        if (studentOpt.isEmpty())
+            return null;
+
+        //looking for grades
+        List<Grade> mathGrades = mathGradeDao.findGradeByStudentId(id);
+        List<Grade> scienceGrades = scienceGradeDao.findGradeByStudentId(id);
+        List<Grade> historyGrades = historyGradeDao.findGradeByStudentId(id);
+
+        studentGrades.setMathGradeResults(mathGrades);
+        studentGrades.setScienceGradeResults(scienceGrades);
+        studentGrades.setHistoryGradeResults(historyGrades);
+
+        CollegeStudent student = studentOpt.get();
+        return new GradebookCollegeStudent(student.getId(), student.getFirstname(), student.getLastname(),
+                student.getEmailAddress(), studentGrades);
     }
 }

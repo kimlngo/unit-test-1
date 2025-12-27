@@ -6,9 +6,7 @@ import com.kimlngo.springmvc.repository.MathGradeDAO;
 import com.kimlngo.springmvc.repository.ScienceGradeDAO;
 import com.kimlngo.springmvc.repository.StudentDAO;
 import com.kimlngo.springmvc.service.StudentAndGradeService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,7 +41,7 @@ public class StudentAndGradeServiceTest {
     private JdbcTemplate jdbcTemplate;
 
     @BeforeEach
-    public void setupDatabase() {
+    public void setupBeforeEach() {
         jdbcTemplate.execute("insert into student(firstname, lastname, email_address) " +
                 "values ('test1', 'test1', 'test1@gmail.com')");
 
@@ -53,13 +51,16 @@ public class StudentAndGradeServiceTest {
     }
 
     @AfterEach
-    public void setupAfterTransaction() {
+    public void tearDownAfterEach() {
         jdbcTemplate.execute("delete from student");
         jdbcTemplate.execute("delete from math_grade");
         jdbcTemplate.execute("delete from science_grade");
         jdbcTemplate.execute("delete from history_grade");
 
         jdbcTemplate.execute("alter table student alter column id restart with 1");
+        jdbcTemplate.execute("alter table math_grade alter column id restart with 1");
+        jdbcTemplate.execute("alter table science_grade alter column id restart with 1");
+        jdbcTemplate.execute("alter table history_grade alter column id restart with 1");
     }
 
     @Test
@@ -118,9 +119,9 @@ public class StudentAndGradeServiceTest {
         assertTrue(studentService.createGrade(75.2, 1, GradeType.HISTORY));
 
         // get all the grade from dao
-        List<MathGrade> mathGrades = mathGradeDao.findGradeByStudentId(1);
-        List<ScienceGrade> scienceGrades = scienceGradeDao.findGradeByStudentId(1);
-        List<HistoryGrade> historyGrades = historyGradeDao.findGradeByStudentId(1);
+        List<Grade> mathGrades = mathGradeDao.findGradeByStudentId(1);
+        List<Grade> scienceGrades = scienceGradeDao.findGradeByStudentId(1);
+        List<Grade> historyGrades = historyGradeDao.findGradeByStudentId(1);
 
         // verify that each subject has two grades
         assertEquals(2, mathGrades.size());
@@ -154,5 +155,33 @@ public class StudentAndGradeServiceTest {
     public void testDeleteGradeWithInvalidId() {
         int studentId = studentService.deleteGrade(0, GradeType.MATH);
         assertEquals(0, studentId);
+    }
+
+    @Test
+    public void testGetStudentInformation() {
+        GradebookCollegeStudent student = studentService.getStudentInformation(1);
+
+        assertNotNull(student);
+        assertEquals(1, student.getId());
+
+        assertEquals("test1", student.getFirstname());
+        assertEquals("test1", student.getLastname());
+        assertEquals("test1@gmail.com", student.getEmailAddress());
+
+        StudentGrades studentGrades = student.getStudentGrades();
+        assertEquals(1, studentGrades
+                .getMathGradeResults()
+                .size());
+        assertEquals(1, studentGrades
+                .getScienceGradeResults()
+                .size());
+        assertEquals(1, studentGrades
+                .getHistoryGradeResults()
+                .size());
+    }
+
+    @Test
+    public void testGetStudentInfoNonExisting() {
+        assertNull(studentService.getStudentInformation(0));
     }
 }
