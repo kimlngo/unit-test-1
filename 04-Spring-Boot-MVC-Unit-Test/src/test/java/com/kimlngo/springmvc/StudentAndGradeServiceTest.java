@@ -8,6 +8,7 @@ import com.kimlngo.springmvc.repository.StudentDAO;
 import com.kimlngo.springmvc.service.StudentAndGradeService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.TestPropertySource;
@@ -40,27 +41,46 @@ public class StudentAndGradeServiceTest {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    //SQL Queries
+    @Value("${sql.script.create.student}")
+    private String createStudentSQL;
+
+    @Value("${sql.script.create.math.grade}")
+    private String createMathGradeSQL;
+
+    @Value("${sql.script.create.science.grade}")
+    private String createScienceGradeSQL;
+
+    @Value("${sql.script.create.history.grade}")
+    private String createHistoryGradeSQL;
+
+    @Value("${sql.script.delete.student}")
+    private String deleteStudentSQL;
+
+    @Value("${sql.script.delete.math.grade}")
+    private String deleteMathGradeSQL;
+
+    @Value("${sql.script.delete.science.grade}")
+    private String deleteScienceGradeSQL;
+
+    @Value("${sql.script.delete.history.grade}")
+    private String deleteHistoryGradeSQL;
+
     @BeforeEach
     public void setupBeforeEach() {
-        jdbcTemplate.execute("insert into student(firstname, lastname, email_address) " +
-                "values ('test1', 'test1', 'test1@gmail.com')");
+        jdbcTemplate.execute(createStudentSQL);
 
-        jdbcTemplate.execute("insert into math_grade(student_id, grade) values (1, 100)");
-        jdbcTemplate.execute("insert into science_grade(student_id, grade) values (1, 90)");
-        jdbcTemplate.execute("insert into history_grade(student_id, grade) values (1, 80)");
+        jdbcTemplate.execute(createMathGradeSQL);
+        jdbcTemplate.execute(createScienceGradeSQL);
+        jdbcTemplate.execute(createHistoryGradeSQL);
     }
 
     @AfterEach
     public void tearDownAfterEach() {
-        jdbcTemplate.execute("delete from student");
-        jdbcTemplate.execute("delete from math_grade");
-        jdbcTemplate.execute("delete from science_grade");
-        jdbcTemplate.execute("delete from history_grade");
-
-        jdbcTemplate.execute("alter table student alter column id restart with 1");
-        jdbcTemplate.execute("alter table math_grade alter column id restart with 1");
-        jdbcTemplate.execute("alter table science_grade alter column id restart with 1");
-        jdbcTemplate.execute("alter table history_grade alter column id restart with 1");
+        jdbcTemplate.execute(deleteStudentSQL);
+        jdbcTemplate.execute(deleteMathGradeSQL);
+        jdbcTemplate.execute(deleteScienceGradeSQL);
+        jdbcTemplate.execute(deleteHistoryGradeSQL);
     }
 
     @Test
