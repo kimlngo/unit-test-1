@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -162,5 +163,34 @@ public class StudentAndGradeService {
         CollegeStudent student = studentOpt.get();
         return new GradebookCollegeStudent(student.getId(), student.getFirstname(), student.getLastname(),
                 student.getEmailAddress(), studentGrades);
+    }
+
+    public void configureStudentInfoModel(int id, Model m) {
+        //Adding averages for math, science and history
+        GradebookCollegeStudent collegeStudent = getStudentInformation(id);
+        m.addAttribute("student", collegeStudent);
+
+        StudentGrades studentGrades = collegeStudent.getStudentGrades();
+
+        m.addAttribute("mathAverage",
+                studentGrades.getMathGradeResults()
+                             .isEmpty() ?
+                        "N/A" :
+                        studentGrades.findGPA(studentGrades.getMathGradeResults())
+        );
+
+        m.addAttribute("scienceAverage",
+                studentGrades.getScienceGradeResults()
+                             .isEmpty() ?
+                        "N/A" :
+                        studentGrades.findGPA(studentGrades.getScienceGradeResults())
+        );
+
+        m.addAttribute("historyAverage",
+                studentGrades.getHistoryGradeResults()
+                             .isEmpty() ?
+                        "N/A" :
+                        studentGrades.findGPA(studentGrades.getHistoryGradeResults())
+        );
     }
 }

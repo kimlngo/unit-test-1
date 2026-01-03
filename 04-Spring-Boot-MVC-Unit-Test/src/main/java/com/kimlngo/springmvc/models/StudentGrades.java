@@ -17,7 +17,7 @@ public class StudentGrades {
 
     public StudentGrades() {}
 
-    public double addGradeResultsForSingleClass(List<Grade> grades) {
+    public double sumAllGrades(List<Grade> grades) {
         double result = 0;
         for (Grade i : grades) {
             result += i.getGrade();
@@ -25,9 +25,9 @@ public class StudentGrades {
         return result;
     }
 
-    public double findGradePointAverage (List<Grade> grades ) {
+    public double findGPA(List<Grade> grades ) {
         int lengthOfGrades = grades.size();
-        double sum = addGradeResultsForSingleClass(grades);
+        double sum = sumAllGrades(grades);
         double result = sum / lengthOfGrades;
 
         // add a round function
