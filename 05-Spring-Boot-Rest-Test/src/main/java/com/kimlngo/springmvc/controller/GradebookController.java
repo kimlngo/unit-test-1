@@ -23,7 +23,6 @@ public class GradebookController {
     @Autowired
     private Gradebook gradebook;
 
-
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public List<GradebookCollegeStudent> getStudents() {
         gradebook = studentService.getGradebook();
@@ -33,13 +32,10 @@ public class GradebookController {
 
     @GetMapping("/studentInformation/{id}")
     public GradebookCollegeStudent studentInformation(@PathVariable int id) {
-
         if (!studentService.checkIfStudentIsNull(id)) {
             throw new StudentOrGradeNotFoundException("Student or Grade was not found");
         }
-        GradebookCollegeStudent studentEntity = studentService.studentInformation(id);
-
-        return studentEntity;
+        return studentService.studentInformation(id);
     }
 
 
@@ -51,10 +47,8 @@ public class GradebookController {
         return gradebook.getStudents();
     }
 
-
     @DeleteMapping("/student/{id}")
     public List<GradebookCollegeStudent> deleteStudent(@PathVariable int id) {
-
         if (!studentService.checkIfStudentIsNull(id)) {
             throw new StudentOrGradeNotFoundException("Student or Grade was not found");
         }

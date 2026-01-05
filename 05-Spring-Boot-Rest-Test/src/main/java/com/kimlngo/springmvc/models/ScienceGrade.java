@@ -1,6 +1,6 @@
 package com.kimlngo.springmvc.models;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "science_grade")
